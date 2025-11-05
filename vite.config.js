@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://miniature-trout-gxv9wvv5r65cwjq-8000.app.github.dev',
+        target: 'https://vg6g2t3v-8000.euw.devtunnels.ms',
         changeOrigin: true,
       }
     }
