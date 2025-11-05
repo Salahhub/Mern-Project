@@ -2,9 +2,6 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
-
-import { initializeApp } from "firebase/app";
-
 // src/firebaseConfig.js or app/src/lib/firebase.tsx
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
@@ -21,9 +18,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-
-
-
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
