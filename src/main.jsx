@@ -5,16 +5,25 @@ import './index.css'
 
 import { initializeApp } from "firebase/app";
 
+// src/firebaseConfig.js or app/src/lib/firebase.tsx
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBNQuE3-cEx4s3hfu9s-F11pXCeJlJL12o",
-  authDomain: "full-stack-react-934cb.firebaseapp.com",
-  projectId: "full-stack-react-934cb",
-  storageBucket: "full-stack-react-934cb.appspot.com",
-  messagingSenderId: "710941682797",
-  appId: "1:710941682797:web:98b92b892648986d4e2364"
+  apiKey: "YOUR_API_KEY", // **IMPORTANT:** Get this from your Firebase project settings (Project settings > General > Web app)
+  authDomain: "react-web-app-6bbe1.firebaseapp.com",
+  projectId: "react-web-app-6bbe1",
+  storageBucket: "react-web-app-6bbe1.appspot.com", // This uses .appspot.com for storageBucket
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // **IMPORTANT:** Get this from your Firebase project settings
+  appId: "YOUR_APP_ID" // **IMPORTANT:** Get this from your Firebase project settings
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+
+
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
