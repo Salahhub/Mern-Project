@@ -18,8 +18,10 @@ export default function NavBar() {
           <Link to='/articles'>Articles</Link>
         { isLoggedIn && <span> (Welcome, {email})</span> }
         </li>
-        <li>{isLoggedIn ?<button onClick={()=>signOut(getAuth())}>Sign out</button>:
-        <button onClick={()=>navigate('/login')}>Sign In</button>}
+        <li> {isLoggedIn
+          ? <button onClick={() => signOut(getAuth())}>Sign out</button>
+          : <button onClick={() => navigate('/login')}>Sign In</button>
+        }
         
         </li>
       </ul>
