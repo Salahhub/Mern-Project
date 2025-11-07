@@ -1,0 +1,12 @@
+runtime: nodejs22
+env: standard
+
+env_variables:
+  MONGODB_USERNAME: "ow"
+  MONGODB_PASSWORD: "Fatmarahmi1966"
+  MONGODB_URI: "mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@cluster0.onbwox7.mongodb.net/?retryWrites=true&w=majority"
+
+handlers:
+  - url: /.*
+    script: auto
+

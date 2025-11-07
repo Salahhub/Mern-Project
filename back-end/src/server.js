@@ -1,8 +1,14 @@
 import express from 'express';
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import admin  from 'firebase-admin';
+import admin from 'firebase-admin';
 import fs from 'fs';
 import e from 'express';
+import {
+  fileURLToPath
+} from 'url';
+import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const credentials = JSON.parse(fs.readFileSync('./credentials.json'));
 
@@ -17,7 +23,10 @@ app.use(express.json());
 let db;
 
 async function connectToDB() {
-  const uri = 'mongodb://127.0.0.1:27017';
+  const uri = !process.env.MONGODB_USERNAME
+    ? 'mongodb://127.0.0.1:27017'
+    : `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.onbwox7.mongodb.net/?appName=Cluster0`;
+
   const client = new MongoClient(uri, {
     serverApi: {
       version: ServerApiVersion.v1,
@@ -70,7 +79,10 @@ async function connectToDB() {
     console.log('🪴 Database seeded with default articles');
   }
 }
-
+app.use(express.static(path.join(__dirname, '../dist')));
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
 app.get('/api/articles/:name', async (req, res) => {
   try {
     const { name } = req.params;
@@ -84,41 +96,43 @@ app.get('/api/articles/:name', async (req, res) => {
   }
 });
 app.use(async function (req, res, next) {
-const {authtoken} = req.headers;
-if (authtoken) {
-  
+  const { authtoken } = req.headers;
+  if (authtoken) {
+
     const user = await admin.auth().verifyIdToken(authtoken);
     req.user = user;
     next();
   } else {
     return res.status(400);
   }
-  
+
 });
 
 app.post('/api/articles/:name/upvote', async (req, res) => {
 
-  const {uid}=req.user;
-    const { name } = req.params;
+  const { uid } = req.user;
+  const { name } = req.params;
 
-    const article = await db.collection('articles').findOne({ name });
-    const upvoteIds= article.upvoteIds ||[];
-    const canUpvote = uid&&!upvoteIds.includes(uid);
-    if (canUpvote) {
+  const article = await db.collection('articles').findOne({ name });
+  const upvoteIds = article.upvoteIds || [];
+  const canUpvote = uid && !upvoteIds.includes(uid);
+  if (canUpvote) {
     const updatedArticle = await db.collection('articles').findOneAndUpdate(
-      { name },{
-       $inc: { upvotes: 1 } ,
-      $push: {upvotedBy:uid} },
-      { returnDocument: 'after' 
+      { name }, {
+      $inc: { upvotes: 1 },
+      $push: { upvotedBy: uid }
+    },
+      {
+        returnDocument: 'after'
 
-      } );
+      });
     if (!updatedArticle.value) {
       return res.status(404).json({ message: 'Article not found' });
     }
     res.json(updatedArticle.value);
-    }else{
-      res.status(403 ).json({message:'User has already upvoted this article or is not logged in'});
-    }
+  } else {
+    res.status(403).json({ message: 'User has already upvoted this article or is not logged in' });
+  }
 });
 
 app.post('/api/articles/:name/comments', async (req, res) => {
@@ -139,10 +153,10 @@ app.post('/api/articles/:name/comments', async (req, res) => {
     res.status(500).json({ message: 'Error adding comment', error });
   }
 });
-
+const PORT = process.env.PORT || 8000;
 async function start() {
   await connectToDB();
-  app.listen(8000, function () {
+  app.listen(PORT, function () {
     console.log('🚀 Server is listening on port 8000');
   });
 }
